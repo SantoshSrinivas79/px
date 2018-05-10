@@ -922,6 +922,7 @@ WINHTTP_ACCESS_TYPE_NAMED_PROXY = 3
 WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY = 4
 
 def winhttp_find_proxy_for_url(url, autodetect=False, pac_url=None, autologon=True):
+    ctypes.windll.winhttp.WinHttpOpen.restype = ctypes.c_void_p
     hInternet = ctypes.windll.winhttp.WinHttpOpen(
         ctypes.wintypes.LPCWSTR("Px"),
         WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, WINHTTP_NO_PROXY_NAME,
@@ -944,6 +945,8 @@ def winhttp_find_proxy_for_url(url, autodetect=False, pac_url=None, autologon=Tr
     autoproxy_options.fAutoLogonIfChallenged = autologon
 
     proxy_info = WINHTTP_PROXY_INFO()
+
+    ctypes.windll.winhttp.WinHttpGetProxyForUrl.argtypes = [ctypes.c_void_p, ctypes.wintypes.LPCWSTR, ctypes.POINTER(WINHTTP_AUTOPROXY_OPTIONS), ctypes.POINTER(WINHTTP_PROXY_INFO)]
 
     ok = ctypes.windll.winhttp.WinHttpGetProxyForUrl(hInternet, ctypes.wintypes.LPCWSTR(url),
             ctypes.byref(autoproxy_options), ctypes.byref(proxy_info))
